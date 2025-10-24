@@ -12,29 +12,33 @@ namespace MohawkGame2D
     {
         // Place your variables here:
         //Player
-        int playerX = 400;
-        int playerY = 400;
-        int playerRadius = 5;
-        Vector2 playerMovement = new Vector2(400, 400);
-        int r = Random.Integer(1, 255);
-        int g = Random.Integer(1, 255);
-        int b = Random.Integer(1, 255);
+        Player player = new Player();
 
         //Street lines
         //First sidewalk line
         Vector2 point1_1 = new Vector2(80, 600);
         Vector2 point1_2 = new Vector2(200, 300);
 
+        Vector2 groundObjLS1 = new Vector2(100, 200);
+        Vector2 groundObjLS2 = new Vector2(40, 300);
+        Vector2 groundObjLS3 = new Vector2(-20, 400);
+        int groundObjLSTimer = 500;
+
         //Second sidwalk line
         Vector2 point2_1 = new Vector2(600, 300);
-        Vector2 point2_2 = new Vector2(780, 600);
+        Vector2 point2_2 = new Vector2(720, 600);
 
         //Yellow division lines idk
-        Vector2[] roadLines = new Vector2[5]; 
+        Vector2[] roadLines = new Vector2[5];
         bool drawLine = true; //Will determine if line is to be seen
 
+        int screen = 1; //Will determine what screen to show
         //
         float secondsElapsed = Time.SecondsElapsed;
+
+        int textureChoice = 1; //Will choose what texture to load
+        string textureFilePath = "";
+        Texture2D playerTexture; 
 
         /// <summary>
         ///     Setup runs once before the game loop begins.
@@ -45,10 +49,13 @@ namespace MohawkGame2D
             Window.SetTitle("Assignment 3 Game");
             Window.TargetFPS = 10;
 
-           
-            
+
+            textureFilePath = "MohawkGame2D\\Images\\StopSign.png";
+            playerTexture = Graphics.LoadTexture(textureFilePath);
+
             //Initialize the roadlines
-            for (int i = 0; i < roadLines.Length; i++) {
+            for (int i = 0; i < roadLines.Length; i++)
+            {
                 roadLines[i] = new Vector2(400, 300 + i * 50);
                 //300, 350, 400, 450, 500
             }
@@ -61,27 +68,79 @@ namespace MohawkGame2D
         public void Update()
         {
             Window.ClearBackground(Color.Black);
-            drawBackground();
-            //Draw score
-            Vector2 lame = new Vector2(44, 44);
-            Text.Color = Color.White;
-            int guy = 60 - Convert.ToInt32(Time.SecondsElapsed);
 
-            Text.Draw((guy).ToString(), lame);
+            if (screen == 1)
+            {
+                if ((Input.IsKeyboardKeyDown(KeyboardInput.Enter) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleRight) == true))
+                {
+                    screen = 2;
+                    Time.SecondsElapsed = 0;
+                }
+                Vector2 textPosition = new Vector2(44, 44);
+                Text.Color = Color.White;
+                Text.Draw("Driving Game", textPosition);
+                textPosition = new Vector2(200, 300);
+                Text.Draw("Press 'enter' or 'start' to begin!", textPosition);
+                textPosition = new Vector2(200, 350);
+                Text.Draw("Use a keyboard or controller!", textPosition);
 
+                if (Input.IsKeyboardKeyDown(KeyboardInput.A)) { player.name = player.name + "a"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.B)) { player.name = player.name + "b"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.C)) { player.name = player.name + "c"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.D)) { player.name = player.name + "d"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.E)) { player.name = player.name + "e"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.F)) { player.name = player.name + "f"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.G)) { player.name = player.name + "g"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.H)) { player.name = player.name + "h"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.I)) { player.name = player.name + "i"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.J)) { player.name = player.name + "j"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.K)) { player.name = player.name + "k"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.L)) { player.name = player.name + "l"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.M)) { player.name = player.name + "m"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.N)) { player.name = player.name + "n"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.O)) { player.name = player.name + "o"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.P)) { player.name = player.name + "p"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.Q)) { player.name = player.name + "q"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.R)) { player.name = player.name + "r"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.S)) { player.name = player.name + "s"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.T)) { player.name = player.name + "t"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.U)) { player.name = player.name + "u"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.V)) { player.name = player.name + "v"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.W)) { player.name = player.name + "w"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.X)) { player.name = player.name + "x"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.Y)) { player.name = player.name + "y"; }
+                if (Input.IsKeyboardKeyDown(KeyboardInput.Z)) { player.name = player.name + "z"; }
 
+                if (Input.IsKeyboardKeyDown(KeyboardInput.Backspace) && (player.name.Length > 0)) //Laggy inputs require a way for the player to correct their work
+                {
+                    player.name = player.name.Remove(player.name.Length - 1);
+                }
+            }
+            if (screen == 2)
+            {
 
+                playerInputs();
 
-            drawPlayer();
-            playerInputs();
+                //Scales radius
+                if (player.plyPosition.Y >= 200) { player.radius = 22; }
+                if (player.plyPosition.Y >= 250) { player.radius = 25; }
+                if (player.plyPosition.Y >= 300) { player.radius = 30; }
+                if (player.plyPosition.Y >= 400) { player.radius = 40; }
+                if (player.plyPosition.Y >= 500) { player.radius = 45; }
+                if (player.plyPosition.Y >= 600) { player.radius = 50; }
 
-            //Scales radius
-            if (playerY >= 200) { playerRadius = 5; }
-            if (playerY >= 250) { playerRadius = 10; }
-            if (playerY >= 300) { playerRadius = 15; }
-             if (playerY >= 400) { playerRadius = 20; }
-             if (playerY >= 500) { playerRadius = 25; }
-             if (playerY >= 600) { playerRadius = 30; }
+                drawBackground();
+                drawObjectLS();
+                //Draw score
+                Vector2 textPosition = new Vector2(44, 44);
+                Text.Color = Color.White;
+                int timer = 60 - Convert.ToInt32(Time.SecondsElapsed);
+
+                Text.Draw(timer.ToString(), textPosition);
+
+                drawPlayer();
+                if (59 > 60 - Convert.ToInt32(Time.SecondsElapsed)) { drawStoppedCar(200, 100 + Convert.ToInt32(Time.SecondsElapsed * 100), 15); }
+            }
         }
 
         /// <summary>
@@ -89,28 +148,27 @@ namespace MohawkGame2D
         /// </summary>
         public void playerInputs()
         {
-            if (Input.IsKeyboardKeyDown(KeyboardInput.Right) == true)
+            float deadzone = 0.05f;
+            if ((Input.IsKeyboardKeyDown(KeyboardInput.Right) == true) || (Input.GetAnyControllerAxis(ControllerAxis.LeftX, deadzone) > 0.10))
             {
-                playerX += 8;
+                player.plyPosition.X += 8;
             }
-            else if (Input.IsKeyboardKeyDown(KeyboardInput.Left) == true)
+            else if ((Input.IsKeyboardKeyDown(KeyboardInput.Left) == true) || (Input.GetAnyControllerAxis(ControllerAxis.LeftX, deadzone) < -0.10))
             {
-                playerX -= 8;
+                player.plyPosition.X -= 8;
             }
-            if (Input.IsKeyboardKeyDown(KeyboardInput.Down) == true)
+            if ((Input.IsKeyboardKeyDown(KeyboardInput.Down) == true) || (Input.GetAnyControllerAxis(ControllerAxis.LeftY, deadzone) > 0.10))
             {
-                playerY += 8;
+                player.plyPosition.Y += 8;
             }
-            else if (Input.IsKeyboardKeyDown(KeyboardInput.Up) == true)
+            else if ((Input.IsKeyboardKeyDown(KeyboardInput.Up) == true) || (Input.GetAnyControllerAxis(ControllerAxis.LeftY, deadzone) < -0.10))
             {
-                playerY -= 8;
+                player.plyPosition.Y -= 8;
             }
-            if (playerY <= 300) { playerY = 301; }
-
-            if (playerX < 80) { playerX = 80; }
-            if (playerX > 780) { playerX = 780; }
-
-            if (playerY > 600) { playerY = 600; }
+            if (player.plyPosition.Y <= 300) { player.plyPosition.Y = 301; }
+            if (player.plyPosition.X < 90) { player.plyPosition.X = 90; }
+            if (player.plyPosition.X > 780) { player.plyPosition.X = 780; }
+            if (player.plyPosition.Y > 600) { player.plyPosition.Y = 600; }
         }
 
         /// <summary>
@@ -126,6 +184,17 @@ namespace MohawkGame2D
             Vector2 skySize = new Vector2(800, 300);
             Draw.Rectangle(skyOriginPoint, skySize);
 
+            Draw.LineColor = Color.Green;
+            Draw.FillColor = Color.Green;
+            Vector2 groundPoint1 = new Vector2(0, 300);
+            Vector2 groundPoint2 = new Vector2(200, 300);
+            Vector2 groundPoint3 = new Vector2(0, 800);
+            Draw.Triangle(groundPoint1, groundPoint2, groundPoint3);
+
+            groundPoint1 = new Vector2(600, 300);
+            groundPoint2 = new Vector2(800, 300);
+            groundPoint3 = new Vector2(800, 800);
+            Draw.Triangle(groundPoint1, groundPoint2, groundPoint3);
 
             //Draws the sidewalk lines
             Draw.LineColor = Color.Gray;
@@ -159,20 +228,77 @@ namespace MohawkGame2D
         /// <summary>
         /// Draws the player
         /// </summary>
-        public void drawPlayer(){
+        public void drawPlayer()
+        {
             //Wheels
             Draw.LineColor = Color.Gray;
             Draw.FillColor = Color.Gray;
-            Vector2 playerWheel = new Vector2(playerX - 12, playerY + 15);
-            Draw.Circle(playerWheel, playerRadius / 2);
-            Vector2 playerWheel2 = new Vector2(playerX + 8, playerY + 15);
-            Draw.Circle(playerWheel2, playerRadius / 2);
+            Vector2 playerWheel = new Vector2(player.plyPosition.X - 12, player.plyPosition.Y + 15);
+            Draw.Circle(playerWheel, player.radius / 2);
+            Vector2 playerWheel2 = new Vector2(player.plyPosition.X + 8, player.plyPosition.Y + 15);
+            Draw.Circle(playerWheel2, player.radius / 2);
 
-            Color playerColour = new Color(r, g, b);
+            Color playerColour = new Color(player.r, player.g, player.b);
             Draw.LineColor = playerColour;
             Draw.FillColor = playerColour;
-            playerMovement = new Vector2(playerX, playerY);
-            Draw.Circle(playerMovement, playerRadius);
+            Vector2 playerMovement = new Vector2(player.plyPosition.X, player.plyPosition.Y);
+            Vector2 playerMovement2 = new Vector2(100, 40);
+            Draw.Rectangle(playerMovement, playerMovement2);
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="x">X position of vehicle</param>
+        /// <param name="y">Y position of vehicle</param>
+        /// <param name="r">Radius of vehicle</param>
+        public void drawStoppedCar(int x, int y, int r)
+        {
+
+            Draw.LineColor = Color.Red;
+            Draw.FillColor = Color.Red;
+            Vector2 enemyCar = new Vector2(x, y);
+            Draw.Circle(enemyCar, r);
+        }
+
+        public void drawObjectLS()
+        {
+
+            if ((groundObjLSTimer <= 150) && (groundObjLSTimer > 100))
+            {
+                Graphics.Scale = 1;
+                Graphics.Draw(playerTexture, groundObjLS1);
+                
+            }
+            else if ((groundObjLSTimer <= 100) && (groundObjLSTimer > 50))
+            {
+                Graphics.Scale = 2;
+                Graphics.Draw(playerTexture, groundObjLS2);
+            }
+            else if ((groundObjLSTimer <= 100) && (groundObjLSTimer > 0))
+            {
+                Graphics.Scale = 3 ;
+                Graphics.Draw(playerTexture, groundObjLS3);
+            }
+            else if (groundObjLSTimer < 0)
+            {
+                groundObjLSTimer = 500;
+                if (textureChoice == 1)
+                {
+                    textureFilePath = "MohawkGame2D\\Images\\StopSign.png";
+                    playerTexture = Graphics.LoadTexture(textureFilePath);
+                    textureChoice = 2;
+                }
+                else if (textureChoice == 2)
+                {
+                    textureFilePath = "MohawkGame2D\\Images\\FireHydrant.png";
+                    playerTexture = Graphics.LoadTexture(textureFilePath);
+                    textureChoice = 1;
+                }
+
+            }
+            groundObjLSTimer -= 10;
 
         }
     }
