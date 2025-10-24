@@ -1,5 +1,6 @@
 ﻿// Include the namespaces (code libraries) you need below.
 using System;
+using System.Drawing;
 using System.Numerics;
 
 // The namespace your code is in.
@@ -19,7 +20,7 @@ namespace MohawkGame2D
         Vector2 point1_1 = new Vector2(80, 600);
         Vector2 point1_2 = new Vector2(200, 300);
 
-        Vector2 groundObjLS1 = new Vector2(100, 200);
+        Vector2 groundObjLS1 = new Vector2(100, 220);
         Vector2 groundObjLS2 = new Vector2(40, 300);
         Vector2 groundObjLS3 = new Vector2(-20, 400);
         int groundObjLSTimer = 500;
@@ -27,6 +28,9 @@ namespace MohawkGame2D
         //Second sidwalk line
         Vector2 point2_1 = new Vector2(600, 300);
         Vector2 point2_2 = new Vector2(720, 600);
+        Vector2 groundObjRS1 = new Vector2(700, 220);
+        Vector2 groundObjRS2 = new Vector2(720, 300);
+        Vector2 groundObjRS3 = new Vector2(760, 400);
 
         //Yellow division lines idk
         Vector2[] roadLines = new Vector2[5];
@@ -38,7 +42,17 @@ namespace MohawkGame2D
 
         int textureChoice = 1; //Will choose what texture to load
         string textureFilePath = "";
-        Texture2D playerTexture; 
+        Texture2D playerTexture;
+
+        //Grass points
+        Vector2 groundPoint1 = new Vector2(0, 300);
+        Vector2 groundPoint2 = new Vector2(200, 300);
+        Vector2 groundPoint3 = new Vector2(0, 800);
+
+
+        Vector2 groundPoint4 = new Vector2(600, 300);
+        Vector2 groundPoint5 = new Vector2(800, 300);
+        Vector2 groundPoint6 = new Vector2(800, 800);
 
         /// <summary>
         ///     Setup runs once before the game loop begins.
@@ -139,8 +153,7 @@ namespace MohawkGame2D
                 Text.Draw(timer.ToString(), textPosition);
 
                 drawPlayer();
-                if (59 > 60 - Convert.ToInt32(Time.SecondsElapsed)) { drawStoppedCar(200, 100 + Convert.ToInt32(Time.SecondsElapsed * 100), 15); }
-            }
+                }
         }
 
         /// <summary>
@@ -151,24 +164,28 @@ namespace MohawkGame2D
             float deadzone = 0.05f;
             if ((Input.IsKeyboardKeyDown(KeyboardInput.Right) == true) || (Input.GetAnyControllerAxis(ControllerAxis.LeftX, deadzone) > 0.10))
             {
-                player.plyPosition.X += 8;
+                player.plyPosition.X += 10;
+
             }
             else if ((Input.IsKeyboardKeyDown(KeyboardInput.Left) == true) || (Input.GetAnyControllerAxis(ControllerAxis.LeftX, deadzone) < -0.10))
             {
-                player.plyPosition.X -= 8;
+                player.plyPosition.X -= 10;
             }
             if ((Input.IsKeyboardKeyDown(KeyboardInput.Down) == true) || (Input.GetAnyControllerAxis(ControllerAxis.LeftY, deadzone) > 0.10))
             {
-                player.plyPosition.Y += 8;
+                player.plyPosition.Y += 10;
             }
             else if ((Input.IsKeyboardKeyDown(KeyboardInput.Up) == true) || (Input.GetAnyControllerAxis(ControllerAxis.LeftY, deadzone) < -0.10))
             {
-                player.plyPosition.Y -= 8;
+                player.plyPosition.Y -= 10;
             }
-            if (player.plyPosition.Y <= 300) { player.plyPosition.Y = 301; }
+            grassCollisionLS();
+            if (player.plyPosition.Y < 300) { player.plyPosition.Y = 300; }
             if (player.plyPosition.X < 90) { player.plyPosition.X = 90; }
-            if (player.plyPosition.X > 780) { player.plyPosition.X = 780; }
+            if (player.plyPosition.X > 720) { player.plyPosition.X = 720; }
             if (player.plyPosition.Y > 600) { player.plyPosition.Y = 600; }
+
+
         }
 
         /// <summary>
@@ -186,15 +203,9 @@ namespace MohawkGame2D
 
             Draw.LineColor = Color.Green;
             Draw.FillColor = Color.Green;
-            Vector2 groundPoint1 = new Vector2(0, 300);
-            Vector2 groundPoint2 = new Vector2(200, 300);
-            Vector2 groundPoint3 = new Vector2(0, 800);
-            Draw.Triangle(groundPoint1, groundPoint2, groundPoint3);
 
-            groundPoint1 = new Vector2(600, 300);
-            groundPoint2 = new Vector2(800, 300);
-            groundPoint3 = new Vector2(800, 800);
             Draw.Triangle(groundPoint1, groundPoint2, groundPoint3);
+            Draw.Triangle(groundPoint4, groundPoint5, groundPoint6);
 
             //Draws the sidewalk lines
             Draw.LineColor = Color.Gray;
@@ -230,38 +241,21 @@ namespace MohawkGame2D
         /// </summary>
         public void drawPlayer()
         {
-            //Wheels
-            Draw.LineColor = Color.Gray;
-            Draw.FillColor = Color.Gray;
-            Vector2 playerWheel = new Vector2(player.plyPosition.X - 12, player.plyPosition.Y + 15);
-            Draw.Circle(playerWheel, player.radius / 2);
-            Vector2 playerWheel2 = new Vector2(player.plyPosition.X + 8, player.plyPosition.Y + 15);
-            Draw.Circle(playerWheel2, player.radius / 2);
+
 
             Color playerColour = new Color(player.r, player.g, player.b);
             Draw.LineColor = playerColour;
             Draw.FillColor = playerColour;
             Vector2 playerMovement = new Vector2(player.plyPosition.X, player.plyPosition.Y);
-            Vector2 playerMovement2 = new Vector2(100, 40);
+            Vector2 playerMovement2 = new Vector2(10, 10);
             Draw.Rectangle(playerMovement, playerMovement2);
 
         }
 
+ 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="x">X position of vehicle</param>
-        /// <param name="y">Y position of vehicle</param>
-        /// <param name="r">Radius of vehicle</param>
-        public void drawStoppedCar(int x, int y, int r)
-        {
-
-            Draw.LineColor = Color.Red;
-            Draw.FillColor = Color.Red;
-            Vector2 enemyCar = new Vector2(x, y);
-            Draw.Circle(enemyCar, r);
-        }
-
         public void drawObjectLS()
         {
 
@@ -269,17 +263,20 @@ namespace MohawkGame2D
             {
                 Graphics.Scale = 1;
                 Graphics.Draw(playerTexture, groundObjLS1);
-                
+                Graphics.Draw(playerTexture, groundObjRS1);
+
             }
             else if ((groundObjLSTimer <= 100) && (groundObjLSTimer > 50))
             {
                 Graphics.Scale = 2;
                 Graphics.Draw(playerTexture, groundObjLS2);
+                Graphics.Draw(playerTexture, groundObjRS2);
             }
             else if ((groundObjLSTimer <= 100) && (groundObjLSTimer > 0))
             {
-                Graphics.Scale = 3 ;
+                Graphics.Scale = 3;
                 Graphics.Draw(playerTexture, groundObjLS3);
+                Graphics.Draw(playerTexture, groundObjRS3);
             }
             else if (groundObjLSTimer < 0)
             {
@@ -299,6 +296,51 @@ namespace MohawkGame2D
 
             }
             groundObjLSTimer -= 10;
+
+        }
+
+        public void grassCollisionLS()
+        {
+
+            // A rectangle is a position and size. A point is just a position.
+            // These values can be anything you wish.
+            Vector2 rectanglePosition;
+            Vector2 rectangleSize;
+            Vector2 point;
+            /*
+                Vector2 groundPoint1 = new Vector2(0, 300);
+                Vector2 groundPoint2 = new Vector2(200, 300);
+                Vector2 groundPoint3 = new Vector2(0, 800);
+             */
+            // We need to convert our position and size into edges
+            float leftEdge = player.plyPosition.X;
+            float rightEdge = player.plyPosition.X + player.plySize.X;
+            float topEdge = player.plyPosition.Y;
+            float bottomEdge = player.plyPosition.Y + player.plySize.Y;
+
+            // We need to check against all for edges
+            bool isWithinX = groundPoint3.X < leftEdge && groundPoint3.X < rightEdge;
+            bool isWithinY = groundPoint3.Y < topEdge && groundPoint3.Y < bottomEdge;
+
+            if (groundPoint1.X < player.plyPosition.X)
+            {
+                if(player.plyPosition.X < groundPoint2.X)
+                {
+                    if (player.plyPosition.Y > groundPoint2.Y){
+                        if (player.plyPosition.Y < groundPoint3.Y)
+                        {
+                            Console.WriteLine("Retard is on the gras!");
+                        }
+                    }
+                }
+            }
+            // We can combine these two results into one
+            bool isWithinRectangle = isWithinX && isWithinY;
+
+             isWithinX = groundPoint2.X > leftEdge && groundPoint2.X > rightEdge;
+             isWithinY = groundPoint2.Y > topEdge && groundPoint2.Y < bottomEdge;
+
+            if (isWithinRectangle && isWithinX && isWithinY == true) { Console.WriteLine("Retard is on the gras!"); }
 
         }
     }
