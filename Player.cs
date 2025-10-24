@@ -16,7 +16,7 @@ namespace MohawkGame2D
         public int r;
         public int g;
         public int b;
-        public int radius;
+        public int acceleration;
         public Vector2 plyPosition;
         public Vector2 plySize;
         
@@ -30,9 +30,10 @@ namespace MohawkGame2D
             r = Random.Integer(1, 255);
             g = Random.Integer(1, 255);
             b = Random.Integer(1, 255);
+            acceleration = 1;
             plyPosition = new Vector2(400, 500);
             plySize = new Vector2(10, 10);
-            radius = 10;
+
         }
 
         /// <summary>
@@ -46,7 +47,8 @@ namespace MohawkGame2D
             r = Random.Integer(1, 255);
             g = Random.Integer(1, 255);
             b = Random.Integer(1, 255);
-            radius = 10;
+            acceleration = 1;
+
         }
 
         public Player(string name, int score, int r, int g, int b, Vector2 plySize, Vector2 plyPosition, int radius)
@@ -58,7 +60,8 @@ namespace MohawkGame2D
             this.b = b;
             this.plySize = plySize;
             this.plyPosition = plyPosition;
-            this.radius = radius;
+            acceleration = 1;
+
         }
     }
 
