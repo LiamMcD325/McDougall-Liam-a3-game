@@ -13,14 +13,19 @@ namespace MohawkGame2D
 
         public string name;
         public int score;
-        public int r;
-        public int g;
-        public int b;
+        int r;
+        int g;
+        int b;
         public int acceleration;
         public Vector2 plyPosition;
         public Vector2 plySize;
-        
-        
+        public int multiplyer;
+        public int evilFrogsKilled = 0;
+
+        public void Setup() { }
+
+        public void Update() { }
+
         /// <summary>
         /// Creates a player with basic variables
         /// </summary>
@@ -30,9 +35,10 @@ namespace MohawkGame2D
             r = Random.Integer(1, 255);
             g = Random.Integer(1, 255);
             b = Random.Integer(1, 255);
-            acceleration = 1;
+            acceleration = 50;
             plyPosition = new Vector2(400, 500);
             plySize = new Vector2(10, 10);
+            multiplyer = 1;
 
         }
 
@@ -47,21 +53,43 @@ namespace MohawkGame2D
             r = Random.Integer(1, 255);
             g = Random.Integer(1, 255);
             b = Random.Integer(1, 255);
-            acceleration = 1;
+            acceleration = 50;
+            multiplyer = 1;
 
         }
 
-        public Player(string name, int score, int r, int g, int b, Vector2 plySize, Vector2 plyPosition, int radius)
-        {
-            this.name = name;
-            this.score = score;
-            this.r = r;
-            this.g = g;
-            this.b = b;
-            this.plySize = plySize;
-            this.plyPosition = plyPosition;
-            acceleration = 1;
+        public void drawPlayer(){
 
+            //Draws the tires
+            //Tire 1
+            Draw.LineColor = Color.Gray;
+            Draw.FillColor = Color.Gray;
+            Vector2 playerMovement = new Vector2(plyPosition.X - 6, plyPosition.Y + 2);
+            Vector2 playerMovement2 = new Vector2(6, 20);
+            Draw.Rectangle(playerMovement, playerMovement2);
+
+            //Tire 2
+            playerMovement = new Vector2(plyPosition.X + 40, plyPosition.Y + 2);
+            playerMovement2 = new Vector2(6, 20);
+            Draw.Rectangle(playerMovement, playerMovement2);
+
+            //Tire 3
+            playerMovement = new Vector2(plyPosition.X - 6, plyPosition.Y + 52);
+            playerMovement2 = new Vector2(6, 20);
+            Draw.Rectangle(playerMovement, playerMovement2);
+
+            //Tire 4
+            playerMovement = new Vector2(plyPosition.X + 40, plyPosition.Y + 52);
+            playerMovement2 = new Vector2(6, 20);
+            Draw.Rectangle(playerMovement, playerMovement2);
+
+            //Draw the main vehicle
+            Color playerColour = new Color(r, g, b);
+            Draw.LineColor = playerColour;
+            Draw.FillColor = playerColour;
+            playerMovement = new Vector2(plyPosition.X, plyPosition.Y);
+            playerMovement2 = new Vector2(40, 75);
+            Draw.Rectangle(playerMovement, playerMovement2);
         }
     }
 

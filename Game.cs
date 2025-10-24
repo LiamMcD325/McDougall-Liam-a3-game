@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.Numerics;
+using System.Threading;
 
 // The namespace your code is in.
 namespace MohawkGame2D
@@ -14,36 +15,41 @@ namespace MohawkGame2D
         // Place your variables here:
         //Player
         Player player = new Player();
-
+        Rocket rocket = new Rocket();
+        
         //Street lines
         //First sidewalk line
 
-        Vector2 groundObjLS1 = new Vector2(75, 0);
-        Vector2 groundObjLS2 = new Vector2(75, 100);
-        Vector2 groundObjLS3 = new Vector2(75, 200);
-        Vector2 groundObjLS4 = new Vector2(75, 300);
-        Vector2 groundObjLS5 = new Vector2(75, 400);
-        Vector2 groundObjLS6 = new Vector2(75, 500);
-        Vector2 groundObjLS7 = new Vector2(75, 600);
+        Vector2 groundObjLS1 = new Vector2(50, 0);
+        Vector2 groundObjLS2 = new Vector2(50, 100);
+        Vector2 groundObjLS3 = new Vector2(50, 200);
+        Vector2 groundObjLS4 = new Vector2(50, 300);
+        Vector2 groundObjLS5 = new Vector2(50, 400);
+        Vector2 groundObjLS6 = new Vector2(50, 500);
         int groundObjLSTimer = 500;
 
         //Second sidwalk line
+        Vector2 groundObjRS1 = new Vector2(700, 0);
+        Vector2 groundObjRS2 = new Vector2(700, 100);
+        Vector2 groundObjRS3 = new Vector2(700, 200);
+        Vector2 groundObjRS4 = new Vector2(700, 300);
+        Vector2 groundObjRS5 = new Vector2(700, 400);
+        Vector2 groundObjRS6 = new Vector2(700, 500);
 
-        Vector2 groundObjRS1 = new Vector2(725, 0);
-        Vector2 groundObjRS2 = new Vector2(725, 100);
-        Vector2 groundObjRS3 = new Vector2(725, 200);
-        Vector2 groundObjRS4 = new Vector2(725, 300);
-        Vector2 groundObjRS5 = new Vector2(725, 400);
-        Vector2 groundObjRS6 = new Vector2(725, 500);
-        Vector2 groundObjRS7 = new Vector2(75, 600);
-
-
+        //Enemy frog information
+        int frogCounter = 500;
+        Frog frog;
+        bool isFrog = false;
 
         int screen = 1; //Will determine what screen to show
-        
+
         int textureChoice = 1; //Will choose what texture to load
-        string textureFilePath = "";
+        string[] textureFilePath = new string[3];
         Texture2D playerTexture;
+
+        //Will spawn a permanent point multiplier for bonus points
+        Vector2 pointsPosition;
+        bool isPoints;
 
 
         /// <summary>
@@ -56,8 +62,10 @@ namespace MohawkGame2D
             Window.TargetFPS = 60;
 
 
-            textureFilePath = "MohawkGame2D\\Images\\StopSign.png";
-            playerTexture = Graphics.LoadTexture(textureFilePath);
+            textureFilePath[0] = "MohawkGame2D\\Images\\StopSign.png";
+            textureFilePath[1] = "MohawkGame2D\\Images\\FireHydrant.png";
+            textureFilePath[2] = "MohawkGame2D\\Images\\Bush.png";
+            playerTexture = Graphics.LoadTexture(textureFilePath[0]);
 
         }
 
@@ -70,31 +78,74 @@ namespace MohawkGame2D
 
             if (screen == 1)
             {
-                if ((Input.IsKeyboardKeyDown(KeyboardInput.Enter) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleRight) == true))
+                if ((Input.IsKeyboardKeyReleased(KeyboardInput.Enter) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleRight) == true))
                 {
                     screen = 2;
-                    Time.SecondsElapsed = 0;
                 }
                 Vector2 textPosition = new Vector2(44, 44);
                 Text.Color = Color.White;
-                Text.Draw("Driving Game", textPosition);
+                Text.Draw("Frogn't", textPosition);
                 textPosition = new Vector2(200, 300);
-                Text.Draw("Press 'enter' or 'start' to begin!", textPosition);
+                Text.Draw("Press 'enter' or 'start'", textPosition);
                 textPosition = new Vector2(200, 350);
                 Text.Draw("Use a keyboard or controller!", textPosition);
 
             }
             if (screen == 2)
             {
+                if ((Input.IsKeyboardKeyReleased(KeyboardInput.Space) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleLeft) == true))
+                {
+                    screen = 3;
+                    Time.SecondsElapsed = 0;
+                }
+                Text.Color = Color.White;
+                Text.Draw("Controls", new Vector2(100, 100));
+                Text.Draw("Accelerate: W key or Right Trigger", new Vector2(100, 150));
+                Text.Draw("De-accelerate: S key or Left Trigger", new Vector2(100, 200));
+                Text.Draw("Shoot rocket: D key or Right Face Down Button", new Vector2(100, 250));
+                Text.Draw("Move: D-Pad or Left Analog Stick", new Vector2(100, 300));
 
+                Text.Draw("Press 'space' or 'select' to begin!", new Vector2(100, 550));
+
+            }
+            if (screen == 3)
+            {
+                rocket.drawRocket();
                 playerInputs();
 
                 drawBackground();
 
                 drawObjectLS();
+                player.drawPlayer();
+                drawMultiplier();
+                drawFrog();
+                checkWin();
+            }
 
-                drawPlayer();
+            if (screen == 4)
+            {
+
+                Text.Color = Color.White;
+                Text.Draw("You win! You killed enough frogs!", new Vector2(44, 44));
+
+                Text.Draw("Press 'enter' to restart", new Vector2(200, 300));
+                if ((Input.IsKeyboardKeyReleased(KeyboardInput.Enter) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleRight) == true))
+                {
+                    screen = 1;
                 }
+
+            }
+            if (screen == 5)
+            {
+                Text.Color = Color.White;
+                Text.Draw("You failed! The frogs won, nuclear winter has begun...", new Vector2(44, 44));
+
+                Text.Draw("Press 'enter' to restart", new Vector2(200, 300));
+                if ((Input.IsKeyboardKeyReleased(KeyboardInput.Enter) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleRight) == true))
+                {
+                    screen = 1;
+                }
+            }
         }
 
         /// <summary>
@@ -118,16 +169,27 @@ namespace MohawkGame2D
             }
             else if ((Input.IsKeyboardKeyDown(KeyboardInput.Up) == true) || (Input.GetAnyControllerAxis(ControllerAxis.LeftY, deadzone) < -0.10))
             {
-                player.plyPosition.Y = player.plyPosition.Y  - player.acceleration / 10; 
+                player.plyPosition.Y = player.plyPosition.Y - player.acceleration / 10;
             }
             if ((Input.IsKeyboardKeyDown(KeyboardInput.W) == true) || (Input.IsAnyControllerButtonDown(ControllerButton.RightTrigger2) == true))
             {
                 player.acceleration += 2;
+                if (player.acceleration > 750) { player.acceleration = 750; }
 
             }
             else if ((Input.IsKeyboardKeyDown(KeyboardInput.S) == true) || (Input.IsAnyControllerButtonDown(ControllerButton.LeftTrigger2) == true))
             {
                 player.acceleration -= 2;
+                if (player.acceleration < 0) { player.acceleration = 0; }
+
+            }
+            if ((Input.IsKeyboardKeyDown(KeyboardInput.D) == true) || (Input.IsAnyControllerButtonDown(ControllerButton.RightFaceDown) == true))
+            {
+                if (rocket.isRocket == false)
+                {
+                    rocket = new Rocket(Convert.ToInt32(player.plyPosition.X) + 10, Convert.ToInt32(player.plyPosition.Y));
+                    rocket.isRocket = true;
+                }
 
             }
 
@@ -136,7 +198,7 @@ namespace MohawkGame2D
 
             if (player.plyPosition.X < 154) { player.plyPosition.X = 154; }
             if (player.plyPosition.X > 604) { player.plyPosition.X = 604; }
-        
+
 
 
         }
@@ -161,75 +223,40 @@ namespace MohawkGame2D
             originSize = new Vector2(500, 600);
             Draw.Rectangle(originPoint, originSize);
 
-             
-                 //Draw score
-                Vector2 textPosition = new Vector2(44, 44);
-                Text.Color = Color.White;
-                int timer = 60 - Convert.ToInt32(Time.SecondsElapsed);
 
-                Text.Draw(timer.ToString(), textPosition);
+            //Draw score and time
+            Text.Color = Color.White;
+            int timer = 120 - Convert.ToInt32(Time.SecondsElapsed);
+            Text.Draw(timer.ToString(), new Vector2(45, 45));
+            Text.Draw(player.score.ToString(), new Vector2(45, 70));
+
         }
 
+
+
+
         /// <summary>
-        /// Draws the player
-        /// </summary>
-        public void drawPlayer()
-        {
-            //Draws the tires
-            //Tire 1
-            Draw.LineColor = Color.Gray;
-            Draw.FillColor = Color.Gray;
-            Vector2 playerMovement = new Vector2(player.plyPosition.X - 6, player.plyPosition.Y + 2);
-            Vector2 playerMovement2 = new Vector2(6, 20);
-            Draw.Rectangle(playerMovement, playerMovement2);
-
-            //Tire 2
-            playerMovement = new Vector2(player.plyPosition.X + 40, player.plyPosition.Y + 2);
-            playerMovement2 = new Vector2(6, 20);
-            Draw.Rectangle(playerMovement, playerMovement2);
-
-            //Tire 3
-            playerMovement = new Vector2(player.plyPosition.X - 6 , player.plyPosition.Y + 52);
-            playerMovement2 = new Vector2(6, 20);
-            Draw.Rectangle(playerMovement, playerMovement2);
-
-            //Tire 4
-            playerMovement = new Vector2(player.plyPosition.X + 40, player.plyPosition.Y + 52);
-            playerMovement2 = new Vector2(6, 20);
-            Draw.Rectangle(playerMovement, playerMovement2);
-
-            //Draw the main vehicle
-            Color playerColour = new Color(player.r, player.g, player.b);
-            Draw.LineColor = playerColour;
-            Draw.FillColor = playerColour;
-            playerMovement = new Vector2(player.plyPosition.X, player.plyPosition.Y);
-            playerMovement2 = new Vector2(40, 75);
-            Draw.Rectangle(playerMovement, playerMovement2);
-        }
-
- 
-        /// <summary>
-        /// 
+        /// Draws objects on the grass on the side of the road at different times to simulate moving
         /// </summary>
         public void drawObjectLS()
         {
 
             if ((groundObjLSTimer <= 600) && (groundObjLSTimer > 500))
             {
-          
+
                 Graphics.Draw(playerTexture, groundObjLS1);
                 Graphics.Draw(playerTexture, groundObjRS1);
 
             }
             else if ((groundObjLSTimer <= 500) && (groundObjLSTimer > 400))
             {
-            
+
                 Graphics.Draw(playerTexture, groundObjLS2);
                 Graphics.Draw(playerTexture, groundObjRS2);
             }
             else if ((groundObjLSTimer <= 400) && (groundObjLSTimer > 300))
             {
-            
+
                 Graphics.Draw(playerTexture, groundObjLS3);
                 Graphics.Draw(playerTexture, groundObjRS3);
             }
@@ -254,28 +281,34 @@ namespace MohawkGame2D
             else if (groundObjLSTimer < 0)
             {
                 groundObjLSTimer = 1000;
+
                 if (textureChoice == 1)
                 {
-                    textureFilePath = "MohawkGame2D\\Images\\StopSign.png";
-                    playerTexture = Graphics.LoadTexture(textureFilePath);
+                    playerTexture = Graphics.LoadTexture(textureFilePath[0]);
                     textureChoice = 2;
                 }
                 else if (textureChoice == 2)
                 {
-                    textureFilePath = "MohawkGame2D\\Images\\FireHydrant.png";
-                    playerTexture = Graphics.LoadTexture(textureFilePath);
+                    
+                    playerTexture = Graphics.LoadTexture(textureFilePath[1]);
+                    textureChoice = 3;
+                }
+                else if (textureChoice == 3)
+                {
+                    
+                    playerTexture = Graphics.LoadTexture(textureFilePath[2]);
                     textureChoice = 1;
                 }
 
             }
             groundObjLSTimer -= 10;
-            int abc = groundObjLSTimer / 100;
 
+            //Draws the grey street lines
+            int abc = groundObjLSTimer / 100;
             Draw.LineColor = Color.Gray;
             Draw.FillColor = Color.Gray;
             if (abc % 2 == 1)
             {
-
                 Draw.Line(new Vector2(400, 50), new Vector2(400, 100));
                 Draw.Line(new Vector2(400, 150), new Vector2(400, 200));
                 Draw.Line(new Vector2(400, 250), new Vector2(400, 300));
@@ -286,8 +319,8 @@ namespace MohawkGame2D
                 Draw.Line(new Vector2(400, 750), new Vector2(400, 800));
                 Draw.Line(new Vector2(400, 850), new Vector2(400, 900));
             }
-            else if (abc % 2 == 0){
-
+            else if (abc % 2 == 0)
+            {
                 Draw.Line(new Vector2(400, 0), new Vector2(400, 50));
                 Draw.Line(new Vector2(400, 100), new Vector2(400, 150));
                 Draw.Line(new Vector2(400, 200), new Vector2(400, 250));
@@ -297,12 +330,102 @@ namespace MohawkGame2D
                 Draw.Line(new Vector2(400, 600), new Vector2(400, 650));
                 Draw.Line(new Vector2(400, 700), new Vector2(400, 750));
                 Draw.Line(new Vector2(400, 800), new Vector2(400, 850));
+            }
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        public void drawFrog()
+        {
+            if ((isFrog == false) && (frogCounter <= 0))
+            {
+                int randomX = Random.Integer(175, 525);
+                frog = new Frog(randomX, 0);
+                isFrog = true;
+            }
+            else if ((isFrog == true) && (frogCounter <= 0))
+            {
+                frog.position.Y += 8;
+                Draw.LineColor = Color.Green;
+                Draw.FillColor = Color.Green;
+                Draw.Circle(frog.position, 10);
+                if (frog.position.Y > 600)
+                {
+                    isFrog = false;
+                    frogCounter = 500;
+                }
+
+                if ((rocket.isRocket == true) && (frog.position.Y - 10 < rocket.position.Y) && (rocket.position.Y < frog.position.Y + 10))
+                {
+                    if ((frog.position.X - 10 < rocket.position.X) && (rocket.position.X < frog.position.X + 10))
+                    {
+                        isFrog = false;
+                        player.score += (20 * player.multiplyer);
+                        frogCounter = 500;
+                    }
+                }
+                if ((frog.position.X > player.plyPosition.X - 4) && (player.plyPosition.X + 48 > frog.position.X))
+                {
+                    if ((frog.position.Y - 10 < player.plyPosition.Y) && (player.plyPosition.Y < frog.position.Y + 10))
+                    {
+                        isFrog = false;
+                        player.score += (5 * player.multiplyer);
+                        frogCounter = 500;
+                    }
+                }
+            }
+            else
+            {
+                frogCounter -= 10;
+            }
+
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void drawMultiplier()
+        {
+            
+            if ((Convert.ToInt16(Time.SecondsElapsed) % 30 == 0) && (isPoints == false) && (Convert.ToInt16(Time.SecondsElapsed) > 5))
+            {
+
+                pointsPosition = new Vector2(Random.Integer(165, 525), 0);
+                isPoints = true;
+            }
+            if (isPoints == true)
+            {
+
+                pointsPosition.Y += 10;
+                Draw.LineColor = Color.Red;
+                Draw.FillColor = Color.Red;
+                Draw.Circle(pointsPosition, 10);
+                if ((pointsPosition.X > player.plyPosition.X) && (player.plyPosition.X + 40 > pointsPosition.X))
+                {
+                    if ((pointsPosition.Y - 10 < player.plyPosition.Y) && (player.plyPosition.Y < pointsPosition.Y + 10))
+                    {
+                        player.multiplyer++;
+                        isPoints = false;
+                        Time.SecondsElapsed++;
+                    }
+                }
+                if(pointsPosition.Y > 600){ isPoints = false; Time.SecondsElapsed++; }
 
             }
+
 
         }
 
 
+        public void checkWin(){
+            if(Convert.ToInt16(Time.SecondsElapsed) > 120){
+                if (player.score >= 750) { screen = 4; }
+                else if (player.score < 750) { screen = 5; }
+            
+            } 
+        }
     }
 
 }
