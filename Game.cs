@@ -38,7 +38,7 @@ namespace MohawkGame2D
         Vector2 groundObjRS6 = new Vector2(700, 500);
 
         //Enemy frog information
-        int frogCounter = 500;
+        int frogCounter = 100;
         Frog frog;
         bool isFrog = false;
 
@@ -223,6 +223,7 @@ namespace MohawkGame2D
 
             }
 
+            //Collision so the player cannot go on the grass
             if (player.plyPosition.Y < 0) { player.plyPosition.Y = 0; }
             if (player.plyPosition.Y > 540) { player.plyPosition.Y = 540; }
 
@@ -256,7 +257,7 @@ namespace MohawkGame2D
 
             //Draw score and time
             Text.Color = Color.White;
-            int timer = 120 - Convert.ToInt32(Time.SecondsElapsed);
+            int timer = 90 - Convert.ToInt32(Time.SecondsElapsed);
             Text.Size = 20;
             Text.Draw("Time Left: " + timer.ToString(), new Vector2(5, 45));
             if (player.evilFrogsKilled <= 30) { Text.Draw("Frogs To Kill: " + (30 - player.evilFrogsKilled).ToString(), new Vector2(5, 65)); }
@@ -366,7 +367,7 @@ namespace MohawkGame2D
         }
         
         /// <summary>
-        /// 
+        /// Draws the frog enemies.
         /// </summary>
         public void drawFrog()
         {
@@ -396,6 +397,7 @@ namespace MohawkGame2D
                         player.score += (20 * player.multiplyer);
                         player.evilFrogsKilled++;
                         frogCounter = 50;
+                        
                     }
                 }
                 if ((frog.position.X > player.plyPosition.X - 4) && (player.plyPosition.X + 48 > frog.position.X))
@@ -406,6 +408,7 @@ namespace MohawkGame2D
                         player.score += (5 * player.multiplyer);
                         player.evilFrogsKilled++;
                         frogCounter = 50;
+                       
                     }
                 }
             }
@@ -454,7 +457,7 @@ namespace MohawkGame2D
 
 
         public void checkWin(){
-            if(Convert.ToInt16(Time.SecondsElapsed) > 120){
+            if(Convert.ToInt16(Time.SecondsElapsed) > 90){
                 if (player.evilFrogsKilled >= 30) { screen = 4; }
                 else if (player.evilFrogsKilled < 30) { screen = 5; }
                 
