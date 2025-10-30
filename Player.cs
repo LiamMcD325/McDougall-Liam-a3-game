@@ -96,7 +96,7 @@ namespace MohawkGame2D
         public void ResetPlayer(){
 
             score = 0;
-            multiplyer = 0;
+            multiplyer = 1;
             evilFrogsKilled = 0;
             acceleration = 50;
         }

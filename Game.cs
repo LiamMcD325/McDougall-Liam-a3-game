@@ -59,7 +59,7 @@ namespace MohawkGame2D
         public void Setup()
         {
             Window.SetSize(800, 600);
-            Window.SetTitle("Assignment 3 Game");
+            Window.SetTitle("Assignment 3 - Frogn't");
             Window.TargetFPS = 60;
 
 
@@ -79,6 +79,7 @@ namespace MohawkGame2D
 
             if (screen == 1) //Main Menu
             {
+                
                 Text.Size = 30;
                 if ((Input.IsKeyboardKeyReleased(KeyboardInput.Enter) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleRight) == true)){screen = 2;}
                 if ((Input.IsKeyboardKeyReleased(KeyboardInput.RightShift) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleLeft) == true))
@@ -87,7 +88,7 @@ namespace MohawkGame2D
                 }
                 Text.Size = 50;
                 Text.Color = Color.Green;
-
+                player.Setup();
                 Text.Draw("Frogn't", new Vector2(44, 44));
                 Text.Size = 30;
                 Text.Color = Color.White;
@@ -98,14 +99,19 @@ namespace MohawkGame2D
                 Text.Draw("press 'right shift' or 'select' to read plot", new Vector2(25, 400));
 
 
+                Text.Draw("Created by: Liam McDougall", new Vector2(25, 575));
+
+
 
             }
             else if (screen == 2) //Controls menu
             {
+                
                 if ((Input.IsKeyboardKeyReleased(KeyboardInput.Enter) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleRight) == true))
                 {
                     screen = 3;
                     Time.SecondsElapsed = 0;
+                    
                 }
 
                 Text.Draw("Controls:", new Vector2(10, 100));
@@ -113,7 +119,7 @@ namespace MohawkGame2D
                 Text.Draw("De-accelerate: S key or Left Trigger", new Vector2(10, 200));
                 Text.Draw("Shoot rocket: D key or Right Face Down Button", new Vector2(10, 250));
                 Text.Draw("Move: D-Pad or Left Analog Stick", new Vector2(10, 300));
-
+                Text.Draw("Collect Red Score Multipliers", new Vector2(10, 350));
                 Text.Draw("Press 'enter' or 'start' to begin!", new Vector2(10, 550));
 
             }
@@ -123,57 +129,60 @@ namespace MohawkGame2D
                 
                 playerInputs();
 
-                drawBackground();
-                drawRocket();
-                drawObjectLS();
+                DrawBackground();
+                DrawRocket();
+                DrawObjectLS();
                 player.Update();
-                drawMultiplier();
-                drawFrog();
-                checkWin();
+                DrawMultiplier();
+                DrawFrog();
+                CheckWin();
             }
 
             else if (screen == 4)//Good Ending
             {
                 Text.Size = 30;
                 //Reset all player stats
-                player.Setup();
-                Text.Draw("You win! You killed enough frogs!", new Vector2(20, 50));
-
-                Text.Draw("Press 'enter' to restart", new Vector2(200, 300));
+                
+                Text.Draw("You win! You killed enough frogs!", new Vector2(40, 50));
+                Text.Draw("Score: " + player.score, new Vector2(40, 150));
+                Text.Draw("Press 'enter' to restart", new Vector2(40, 300));
                 if ((Input.IsKeyboardKeyReleased(KeyboardInput.Enter) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleRight) == true))
                 {
                     screen = 1;
                 }
-
+                
             }
             else if (screen == 5) //Bad Ending
             {
                 Text.Size = 30;
                 //Reset all player stats
-                player.Setup();
-                Text.Draw("You failed! The frogs won, nuclear winter \nhas begun...", new Vector2(20, 50));
-
-                Text.Draw("Press 'enter' to restart", new Vector2(200, 300));
+                
+                Text.Draw("You failed! The frogs won, nuclear winter \nhas begun...", new Vector2(40, 50));
+                Text.Draw("Score: " + player.score, new Vector2(40, 150));
+                Text.Draw("Press 'enter' to restart", new Vector2(40, 300));
                 if ((Input.IsKeyboardKeyReleased(KeyboardInput.Enter) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleRight) == true))
                 {
                     screen = 1;
                 }
+                
             }
             else if (screen == 6) //Controls menu
             {
+
                 if ((Input.IsKeyboardKeyReleased(KeyboardInput.Enter) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleRight) == true))
                 {
-                    screen = 3;
-                    Time.SecondsElapsed = 0;
+                    screen = 1;
                 }
 
-                Text.Draw("Controls:", new Vector2(10, 100));
-                Text.Draw("Accelerate: W key or Right Trigger", new Vector2(10, 150));
-                Text.Draw("De-accelerate: S key or Left Trigger", new Vector2(10, 200));
-                Text.Draw("Shoot rocket: D key or Right Face Down Button", new Vector2(10, 250));
-                Text.Draw("Move: D-Pad or Left Analog Stick", new Vector2(10, 300));
+                Text.Draw("It is the year 50XX... frogs have discovered \n"
+                        + "nuclear weapons. They have found the required \n" +
+                        "launch codes. Now, their goal is to get to the \n" +
+                        "launch pad and enter the codes. Your goal is to \n" +
+                        "stop nuclear winter. Kill every frog you see, \n" +
+                        "either run them over or launch your rockets and \n" +
+                        "blow them back to France...", new Vector2(10, 40));
 
-                Text.Draw("Press 'enter' or 'start' to begin!", new Vector2(10, 550));
+               
 
             }
         }
@@ -237,7 +246,7 @@ namespace MohawkGame2D
         /// <summary>
         /// Draws the basic background colours
         /// </summary>
-        public void drawBackground()
+        public void DrawBackground()
         {
             //Draws the grass
             Vector2 originPoint = new Vector2(0, 0);
@@ -271,7 +280,7 @@ namespace MohawkGame2D
         /// <summary>
         /// Draws objects on the grass on the side of the road at different times to simulate moving
         /// </summary>
-        public void drawObjectLS()
+        public void DrawObjectLS()
         {
 
             if ((groundObjLSTimer <= 600) && (groundObjLSTimer > 500))
@@ -369,7 +378,7 @@ namespace MohawkGame2D
         /// <summary>
         /// Draws the frog enemies.
         /// </summary>
-        public void drawFrog()
+        public void DrawFrog()
         {
             if ((isFrog == false) && (frogCounter <= 0))
             {
@@ -421,9 +430,9 @@ namespace MohawkGame2D
         }
 
         /// <summary>
-        /// 
+        /// Draws the multiplier orb the player can collect
         /// </summary>
-        public void drawMultiplier()
+        public void DrawMultiplier()
         {
             
             if ((Convert.ToInt16(Time.SecondsElapsed) % 30 == 0) && (isPoints == false) && (Convert.ToInt16(Time.SecondsElapsed) > 5))
@@ -456,7 +465,7 @@ namespace MohawkGame2D
         }
 
 
-        public void checkWin(){
+        public void CheckWin(){
             if(Convert.ToInt16(Time.SecondsElapsed) > 90){
                 if (player.evilFrogsKilled >= 30) { screen = 4; }
                 else if (player.evilFrogsKilled < 30) { screen = 5; }
@@ -467,7 +476,7 @@ namespace MohawkGame2D
         /// <summary>
         /// Draws the player's rocket attack
         /// </summary>
-        public void drawRocket()
+        public void DrawRocket()
         {
 
             //If rocket has been launched
