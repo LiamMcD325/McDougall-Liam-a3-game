@@ -22,9 +22,9 @@ namespace MohawkGame2D
         public int multiplyer;
         public int evilFrogsKilled = 0;
 
-        public void Setup() { }
+        public void Setup() { ResetPlayer(); }
 
-        public void Update() { }
+        public void Update() { DrawPlayer(); }
 
         /// <summary>
         /// Creates a player with basic variables
@@ -58,7 +58,8 @@ namespace MohawkGame2D
 
         }
 
-        public void drawPlayer(){
+
+        public void DrawPlayer(){
 
             //Draws the tires
             //Tire 1
@@ -90,6 +91,14 @@ namespace MohawkGame2D
             playerMovement = new Vector2(plyPosition.X, plyPosition.Y);
             playerMovement2 = new Vector2(40, 75);
             Draw.Rectangle(playerMovement, playerMovement2);
+        }
+
+        public void ResetPlayer(){
+
+            score = 0;
+            multiplyer = 0;
+            evilFrogsKilled = 0;
+            acceleration = 50;
         }
     }
 

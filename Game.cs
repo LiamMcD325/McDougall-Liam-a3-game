@@ -1,6 +1,7 @@
 ﻿// Include the namespaces (code libraries) you need below.
 using System;
 using System.Drawing;
+using System.Net.Sockets;
 using System.Numerics;
 using System.Threading;
 
@@ -19,7 +20,7 @@ namespace MohawkGame2D
         
         //Street lines
         //First sidewalk line
-
+        //Each space is used to create an illusion of an object moving down the screen so the player appears to be driving forward
         Vector2 groundObjLS1 = new Vector2(50, 0);
         Vector2 groundObjLS2 = new Vector2(50, 100);
         Vector2 groundObjLS3 = new Vector2(50, 200);
@@ -90,43 +91,45 @@ namespace MohawkGame2D
                 textPosition = new Vector2(200, 350);
                 Text.Draw("Use a keyboard or controller!", textPosition);
 
+
+
             }
-            if (screen == 2)
+            else if (screen == 2)
             {
-                if ((Input.IsKeyboardKeyReleased(KeyboardInput.Space) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleLeft) == true))
+                if ((Input.IsKeyboardKeyReleased(KeyboardInput.Enter) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleRight) == true))
                 {
                     screen = 3;
                     Time.SecondsElapsed = 0;
                 }
-                Text.Color = Color.White;
-                Text.Draw("Controls", new Vector2(100, 100));
-                Text.Draw("Accelerate: W key or Right Trigger", new Vector2(100, 150));
-                Text.Draw("De-accelerate: S key or Left Trigger", new Vector2(100, 200));
-                Text.Draw("Shoot rocket: D key or Right Face Down Button", new Vector2(100, 250));
-                Text.Draw("Move: D-Pad or Left Analog Stick", new Vector2(100, 300));
 
-                Text.Draw("Press 'space' or 'select' to begin!", new Vector2(100, 550));
+                Text.Draw("Controls:", new Vector2(10, 100));
+                Text.Draw("Accelerate: W key or Right Trigger", new Vector2(10, 150));
+                Text.Draw("De-accelerate: S key or Left Trigger", new Vector2(10, 200));
+                Text.Draw("Shoot rocket: D key or Right Face Down Button", new Vector2(10, 250));
+                Text.Draw("Move: D-Pad or Left Analog Stick", new Vector2(10, 300));
+
+                Text.Draw("Press 'enter' or 'start' to begin!", new Vector2(10, 550));
 
             }
-            if (screen == 3)
+            else if (screen == 3)
             {
-                rocket.drawRocket();
+                
                 playerInputs();
 
                 drawBackground();
-
+                drawRocket();
                 drawObjectLS();
-                player.drawPlayer();
+                player.Update();
                 drawMultiplier();
                 drawFrog();
                 checkWin();
             }
 
-            if (screen == 4)
+            else if (screen == 4)
             {
-
-                Text.Color = Color.White;
-                Text.Draw("You win! You killed enough frogs!", new Vector2(44, 44));
+                            //Reset all player stats
+                player.Setup();
+                Text.Draw("You win! You killed enough frogs!", new Vector2(20, 50));
 
                 Text.Draw("Press 'enter' to restart", new Vector2(200, 300));
                 if ((Input.IsKeyboardKeyReleased(KeyboardInput.Enter) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleRight) == true))
@@ -135,10 +138,11 @@ namespace MohawkGame2D
                 }
 
             }
-            if (screen == 5)
+            else if (screen == 5)
             {
-                Text.Color = Color.White;
-                Text.Draw("You failed! The frogs won, nuclear winter has begun...", new Vector2(44, 44));
+                //Reset all player stats
+                player.Setup();
+                Text.Draw("You failed! The frogs won, nuclear winter \nhas begun...", new Vector2(20, 50));
 
                 Text.Draw("Press 'enter' to restart", new Vector2(200, 300));
                 if ((Input.IsKeyboardKeyReleased(KeyboardInput.Enter) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleRight) == true))
@@ -353,7 +357,7 @@ namespace MohawkGame2D
                 if (frog.position.Y > 600)
                 {
                     isFrog = false;
-                    frogCounter = 500;
+                    frogCounter = 50;
                 }
 
                 if ((rocket.isRocket == true) && (frog.position.Y - 10 < rocket.position.Y) && (rocket.position.Y < frog.position.Y + 10))
@@ -362,7 +366,8 @@ namespace MohawkGame2D
                     {
                         isFrog = false;
                         player.score += (20 * player.multiplyer);
-                        frogCounter = 500;
+                        player.evilFrogsKilled++;
+                        frogCounter = 50;
                     }
                 }
                 if ((frog.position.X > player.plyPosition.X - 4) && (player.plyPosition.X + 48 > frog.position.X))
@@ -371,13 +376,14 @@ namespace MohawkGame2D
                     {
                         isFrog = false;
                         player.score += (5 * player.multiplyer);
-                        frogCounter = 500;
+                        player.evilFrogsKilled++;
+                        frogCounter = 50;
                     }
                 }
             }
             else
             {
-                frogCounter -= 10;
+                frogCounter--;
             }
 
 
@@ -421,10 +427,29 @@ namespace MohawkGame2D
 
         public void checkWin(){
             if(Convert.ToInt16(Time.SecondsElapsed) > 120){
-                if (player.score >= 750) { screen = 4; }
-                else if (player.score < 750) { screen = 5; }
-            
+                if (player.score >= 800) { screen = 4; }
+                else if (player.score < 800) { screen = 5; }
+                
             } 
+        }
+
+        /// <summary>
+        /// Draws the player
+        /// </summary>
+        public void drawRocket()
+        {
+
+            //If rocket has been launched
+            if (rocket.isRocket == true)
+            {
+                Console.WriteLine("ROCKET LAUNCHED!!");
+                rocket.position.Y -= 15;
+                Draw.LineColor = Color.Blue;
+                Draw.FillColor = Color.Blue;
+                Draw.Rectangle(rocket.position, rocket.size);
+
+                if (rocket.position.Y < 0) { rocket.isRocket = false; Console.WriteLine("rocket done"); }
+            }
         }
     }
 

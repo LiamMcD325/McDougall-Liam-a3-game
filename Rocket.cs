@@ -11,40 +11,25 @@ namespace MohawkGame2D
     internal class Rocket
     {
         public Vector2 position;
-        public Vector2 size = new Vector2(5, 20);
+        public Vector2 size;
         public bool isRocket;
 
         public Rocket(int x, int y) {
             position = new Vector2(x, y);
             isRocket = false;
+            size = new Vector2(5, 20);
         }
 
         public Rocket() {
             position = new Vector2(800, 600);
             isRocket = false;
+            size = new Vector2(5, 20);
 
         }
         public void Setup() { }
 
         public void Update(){ }
 
-        /// <summary>
-        /// Draws the player
-        /// </summary>
-        public void drawRocket()
-        {
 
-            //If rocket has been launched
-            if (isRocket == true)
-            {
-                Console.WriteLine("ROCKET LAUNCHED!!");
-                position.Y -= 15;
-                Draw.LineColor = Color.Red;
-                Draw.FillColor = Color.Blue;
-
-                Draw.Rectangle(position, size);
-                if (position.Y < 0) { isRocket = false; Console.WriteLine("rocket done"); }
-            }
-        }
     }
 }
