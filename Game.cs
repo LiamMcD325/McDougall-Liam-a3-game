@@ -77,24 +77,30 @@ namespace MohawkGame2D
         {
             Window.ClearBackground(Color.Black);
 
-            if (screen == 1)
+            if (screen == 1) //Main Menu
             {
-                if ((Input.IsKeyboardKeyReleased(KeyboardInput.Enter) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleRight) == true))
+                Text.Size = 30;
+                if ((Input.IsKeyboardKeyReleased(KeyboardInput.Enter) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleRight) == true)){screen = 2;}
+                if ((Input.IsKeyboardKeyReleased(KeyboardInput.RightShift) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleLeft) == true))
                 {
-                    screen = 2;
+                    screen = 6;
                 }
-                Vector2 textPosition = new Vector2(44, 44);
+                Text.Size = 50;
+                Text.Color = Color.Green;
+
+                Text.Draw("Frogn't", new Vector2(44, 44));
+                Text.Size = 30;
                 Text.Color = Color.White;
-                Text.Draw("Frogn't", textPosition);
-                textPosition = new Vector2(200, 300);
-                Text.Draw("Press 'enter' or 'start'", textPosition);
-                textPosition = new Vector2(200, 350);
-                Text.Draw("Use a keyboard or controller!", textPosition);
+                Text.Draw("Use a keyboard or controller!", new Vector2(25, 300));
+                Text.Draw("Press 'enter' or 'start'", new Vector2(25, 350));
+
+                
+                Text.Draw("press 'right shift' or 'select' to read plot", new Vector2(25, 400));
 
 
 
             }
-            else if (screen == 2)
+            else if (screen == 2) //Controls menu
             {
                 if ((Input.IsKeyboardKeyReleased(KeyboardInput.Enter) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleRight) == true))
                 {
@@ -111,7 +117,8 @@ namespace MohawkGame2D
                 Text.Draw("Press 'enter' or 'start' to begin!", new Vector2(10, 550));
 
             }
-            else if (screen == 3)
+
+            else if (screen == 3) //Main Game
             {
                 
                 playerInputs();
@@ -125,9 +132,10 @@ namespace MohawkGame2D
                 checkWin();
             }
 
-            else if (screen == 4)
+            else if (screen == 4)//Good Ending
             {
-                            //Reset all player stats
+                Text.Size = 30;
+                //Reset all player stats
                 player.Setup();
                 Text.Draw("You win! You killed enough frogs!", new Vector2(20, 50));
 
@@ -138,8 +146,9 @@ namespace MohawkGame2D
                 }
 
             }
-            else if (screen == 5)
+            else if (screen == 5) //Bad Ending
             {
+                Text.Size = 30;
                 //Reset all player stats
                 player.Setup();
                 Text.Draw("You failed! The frogs won, nuclear winter \nhas begun...", new Vector2(20, 50));
@@ -149,6 +158,23 @@ namespace MohawkGame2D
                 {
                     screen = 1;
                 }
+            }
+            else if (screen == 6) //Controls menu
+            {
+                if ((Input.IsKeyboardKeyReleased(KeyboardInput.Enter) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleRight) == true))
+                {
+                    screen = 3;
+                    Time.SecondsElapsed = 0;
+                }
+
+                Text.Draw("Controls:", new Vector2(10, 100));
+                Text.Draw("Accelerate: W key or Right Trigger", new Vector2(10, 150));
+                Text.Draw("De-accelerate: S key or Left Trigger", new Vector2(10, 200));
+                Text.Draw("Shoot rocket: D key or Right Face Down Button", new Vector2(10, 250));
+                Text.Draw("Move: D-Pad or Left Analog Stick", new Vector2(10, 300));
+
+                Text.Draw("Press 'enter' or 'start' to begin!", new Vector2(10, 550));
+
             }
         }
 
@@ -231,8 +257,10 @@ namespace MohawkGame2D
             //Draw score and time
             Text.Color = Color.White;
             int timer = 120 - Convert.ToInt32(Time.SecondsElapsed);
-            Text.Draw(timer.ToString(), new Vector2(45, 45));
-            Text.Draw(player.score.ToString(), new Vector2(45, 70));
+            Text.Size = 20;
+            Text.Draw("Time Left: " + timer.ToString(), new Vector2(5, 45));
+            if (player.evilFrogsKilled <= 30) { Text.Draw("Frogs To Kill: " + (30 - player.evilFrogsKilled).ToString(), new Vector2(5, 65)); }
+            Text.Draw("Score: " + player.score.ToString(), new Vector2(5, 85));
 
         }
 
@@ -427,14 +455,14 @@ namespace MohawkGame2D
 
         public void checkWin(){
             if(Convert.ToInt16(Time.SecondsElapsed) > 120){
-                if (player.score >= 800) { screen = 4; }
-                else if (player.score < 800) { screen = 5; }
+                if (player.evilFrogsKilled >= 30) { screen = 4; }
+                else if (player.evilFrogsKilled < 30) { screen = 5; }
                 
             } 
         }
 
         /// <summary>
-        /// Draws the player
+        /// Draws the player's rocket attack
         /// </summary>
         public void drawRocket()
         {
@@ -442,13 +470,13 @@ namespace MohawkGame2D
             //If rocket has been launched
             if (rocket.isRocket == true)
             {
-                Console.WriteLine("ROCKET LAUNCHED!!");
+                
                 rocket.position.Y -= 15;
                 Draw.LineColor = Color.Blue;
                 Draw.FillColor = Color.Blue;
                 Draw.Rectangle(rocket.position, rocket.size);
 
-                if (rocket.position.Y < 0) { rocket.isRocket = false; Console.WriteLine("rocket done"); }
+                if (rocket.position.Y < 0) { rocket.isRocket = false;  }
             }
         }
     }
