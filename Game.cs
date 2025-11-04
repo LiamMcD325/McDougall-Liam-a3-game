@@ -127,12 +127,13 @@ namespace MohawkGame2D
             else if (screen == 3) //Main Game
             {
                 
-                playerInputs();
-
+                RocketLaunch();
                 DrawBackground();
+                player.Update();
+                
                 DrawRocket();
                 DrawObjectLS();
-                player.Update();
+                
                 DrawMultiplier();
                 DrawFrog();
                 CheckWin();
@@ -188,40 +189,10 @@ namespace MohawkGame2D
         }
 
         /// <summary>
-        /// Checks if player is making an input
+        /// Checks if player is trying to launch a rocket
         /// </summary>
-        public void playerInputs()
-        {
-            float deadzone = 0.05f;
-            if ((Input.IsKeyboardKeyDown(KeyboardInput.Right) == true) || (Input.GetAnyControllerAxis(ControllerAxis.LeftX, deadzone) > 0.10))
-            {
-                player.plyPosition.X = player.plyPosition.X + player.acceleration / 10;
-
-            }
-            else if ((Input.IsKeyboardKeyDown(KeyboardInput.Left) == true) || (Input.GetAnyControllerAxis(ControllerAxis.LeftX, deadzone) < -0.10))
-            {
-                player.plyPosition.X = player.plyPosition.X - player.acceleration / 10;
-            }
-            if ((Input.IsKeyboardKeyDown(KeyboardInput.Down) == true) || (Input.GetAnyControllerAxis(ControllerAxis.LeftY, deadzone) > 0.10))
-            {
-                player.plyPosition.Y = player.plyPosition.Y + player.acceleration / 10; ;
-            }
-            else if ((Input.IsKeyboardKeyDown(KeyboardInput.Up) == true) || (Input.GetAnyControllerAxis(ControllerAxis.LeftY, deadzone) < -0.10))
-            {
-                player.plyPosition.Y = player.plyPosition.Y - player.acceleration / 10;
-            }
-            if ((Input.IsKeyboardKeyDown(KeyboardInput.W) == true) || (Input.IsAnyControllerButtonDown(ControllerButton.RightTrigger2) == true))
-            {
-                player.acceleration += 2;
-                if (player.acceleration > 750) { player.acceleration = 750; }
-
-            }
-            else if ((Input.IsKeyboardKeyDown(KeyboardInput.S) == true) || (Input.IsAnyControllerButtonDown(ControllerButton.LeftTrigger2) == true))
-            {
-                player.acceleration -= 2;
-                if (player.acceleration < 0) { player.acceleration = 0; }
-
-            }
+        public void RocketLaunch()
+        {            
             if ((Input.IsKeyboardKeyDown(KeyboardInput.D) == true) || (Input.IsAnyControllerButtonDown(ControllerButton.RightFaceDown) == true))
             {
                 if (rocket.isRocket == false)
@@ -231,14 +202,6 @@ namespace MohawkGame2D
                 }
 
             }
-
-            //Collision so the player cannot go on the grass
-            if (player.plyPosition.Y < 0) { player.plyPosition.Y = 0; }
-            if (player.plyPosition.Y > 540) { player.plyPosition.Y = 540; }
-
-            if (player.plyPosition.X < 154) { player.plyPosition.X = 154; }
-            if (player.plyPosition.X > 604) { player.plyPosition.X = 604; }
-
 
 
         }
