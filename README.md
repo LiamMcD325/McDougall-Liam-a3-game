@@ -10,4 +10,8 @@ De-Accelerate | S Key     | Left Trigger
       Move Up | Up Key    | Analog Stick 
     Move Down | Down Key  | Analog Stick 
    Move Right | Right Key | Analog Stick 
-    Move Left | Left Key    | Analog Stick 
+    Move Left | Left Key  | Analog Stick 
+
+Run over or shoot frogs to stop them. Earn more points by hitting them with rockets.
+
+Collect Red Multiplier Orbs for permanent point upgrades.
