@@ -182,9 +182,7 @@ namespace MohawkGame2D
                         "launch pad and enter the codes. Your goal is to \n" +
                         "stop nuclear winter. Kill every frog you see, \n" +
                         "either run them over or launch your rockets and \n" +
-                        "blow them back to France...", new Vector2(10, 40));
-
-               
+                        "blow them back to the swamp...", new Vector2(10, 40));
 
             }
         }
