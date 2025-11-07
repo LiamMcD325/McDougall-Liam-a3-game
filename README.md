@@ -1,5 +1,5 @@
 # McDougall-Liam-a3-game
-
+Please view instructions in raw code
 Use either a controller or keyboard to play. 
 
      Controls | Keyboard  | Controller
