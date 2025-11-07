@@ -124,7 +124,7 @@ namespace MohawkGame2D
 
             }
 
-            else if (screen == 3) //Main Game
+            else if (screen == 3) //Main Gameplay
             {
                 
                 RocketLaunch();
@@ -136,6 +136,7 @@ namespace MohawkGame2D
                 
                 DrawMultiplier();
                 DrawFrog();
+                player.DrawPlayer();
                 CheckWin();
             }
 
@@ -167,7 +168,7 @@ namespace MohawkGame2D
                 }
                 
             }
-            else if (screen == 6) //Controls menu
+            else if (screen == 6) //Plot Synopsis Menu
             {
 
                 if ((Input.IsKeyboardKeyReleased(KeyboardInput.Enter) == true) || (Input.IsAnyControllerButtonPressed(ControllerButton.MiddleRight) == true))
@@ -428,6 +429,9 @@ namespace MohawkGame2D
         }
 
 
+        /// <summary>
+        /// Checks if the player has killed enough frogs
+        /// </summary>
         public void CheckWin(){
             if(Convert.ToInt16(Time.SecondsElapsed) > 90){
                 if (player.evilFrogsKilled >= 30) { screen = 4; }

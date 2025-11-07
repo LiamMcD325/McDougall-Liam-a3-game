@@ -13,9 +13,12 @@ namespace MohawkGame2D
 
         
         public int score;
+
+        //Randomizes what colour the player is
         int r;
         int g;
         int b;
+
         public int acceleration;
         public Vector2 plyPosition;
         public Vector2 plySize;
@@ -67,8 +70,6 @@ namespace MohawkGame2D
 
         public void DrawPlayer()
         {
-            Console.WriteLine("DRAW PLAYER HAS LOADED");
-            Console.WriteLine("Drawing player at position: " + plyPosition);
             //Draws the tires
             //Tire 1
             Draw.LineColor = Color.Gray;
@@ -101,6 +102,9 @@ namespace MohawkGame2D
             Draw.Rectangle(playerMovement, playerMovement2);
         }
 
+        /// <summary>
+        /// Resets all player information for when they play again
+        /// </summary>
         public void ResetPlayer()
         {
 
